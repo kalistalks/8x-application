@@ -62,6 +62,10 @@ export function SceneComposer({ prompt, onPromptChange, imageDataUrl, onImageCha
 
   return (
     <div className="space-y-2">
+      <p id={`${id}-help`} className="text-xs text-ink-faint">
+        Describe what appears in the shot. Camera movement is controlled below.
+      </p>
+      
       {/* Composer surface: textarea + footer with the image chip and count. */}
       <div className="rounded-md border border-line bg-surface focus-within:border-line-strong">
         <textarea
@@ -132,10 +136,6 @@ export function SceneComposer({ prompt, onPromptChange, imageDataUrl, onImageCha
           </span>
         </div>
       </div>
-
-      <p id={`${id}-help`} className="text-xs text-ink-faint">
-        Describe what appears in the shot. Camera movement is controlled below.
-      </p>
 
       {error && (
         <p id={errorId} role="alert" className="flex items-center gap-1.5 text-xs text-danger">
