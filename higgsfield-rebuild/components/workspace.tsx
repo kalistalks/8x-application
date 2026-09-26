@@ -2,8 +2,19 @@
 
 import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import type { SequenceItem, WorkspaceState } from "@/lib/types";
+import { MAX_MOVES, type MoveSpeed, type SequenceItem, type WorkspaceState } from "@/lib/types";
 import { Compose } from "@/components/compose";
+
+/** Per-instance id for a sequence item (stable across reorders). */
+function newUid(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+/** Default speed treatment for a freshly added move. */
+const DEFAULT_SPEED: MoveSpeed = "Dynamic";
 
 /**
  * The workspace state machine (spec: Product Principle). Holds all shared state
@@ -17,6 +28,36 @@ export function Workspace() {
   const [prompt, setPrompt] = useState("");
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
   const [sequence, setSequence] = useState<SequenceItem[]>([]);
+
+  const full = sequence.length >= MAX_MOVES;
+
+  const addMove = useCallback((moveId: string) => {
+    setSequence((prev) => {
+      if (prev.length >= MAX_MOVES) return prev; // enforce max; duplicates allowed
+      return [...prev, { uid: newUid(), moveId, speed: DEFAULT_SPEED }];
+    });
+  }, []);
+
+  const removeItem = useCallback((uid: string) => {
+    setSequence((prev) => prev.filter((item) => item.uid !== uid));
+  }, []);
+
+  const setItemSpeed = useCallback((uid: string, speed: MoveSpeed) => {
+    setSequence((prev) => prev.map((item) => (item.uid === uid ? { ...item, speed } : item)));
+  }, []);
+
+  /** Move an item one position earlier (-1) or later (+1), clamped. */
+  const moveItem = useCallback((uid: string, direction: -1 | 1) => {
+    setSequence((prev) => {
+      const from = prev.findIndex((item) => item.uid === uid);
+      if (from === -1) return prev;
+      const to = from + direction;
+      if (to < 0 || to >= prev.length) return prev;
+      const next = [...prev];
+      [next[from], next[to]] = [next[to], next[from]];
+      return next;
+    });
+  }, []);
 
   const startOver = useCallback(() => {
     setPrompt("");
@@ -42,7 +83,11 @@ export function Workspace() {
               imageDataUrl={imageDataUrl}
               onImageChange={setImageDataUrl}
               sequence={sequence}
-              onSequenceChange={setSequence}
+              full={full}
+              onAddMove={addMove}
+              onRemoveItem={removeItem}
+              onMoveItem={moveItem}
+              onSetItemSpeed={setItemSpeed}
               onGenerate={() => setState("generating")}
             />
           )}
