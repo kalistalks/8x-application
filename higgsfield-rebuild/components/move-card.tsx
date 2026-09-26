@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Check } from "@phosphor-icons/react";
+import { PlusIcon, CheckIcon } from "@phosphor-icons/react";
 import type { CameraMove } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +66,7 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
               : "border-line bg-canvas/70 text-ink-muted backdrop-blur group-hover:border-line-strong group-hover:text-ink",
           )}
         >
-          {added ? <Check size={15} weight="bold" aria-hidden /> : <Plus size={15} weight="bold" aria-hidden />}
+          {added ? <CheckIcon size={15} weight="bold" aria-hidden /> : <PlusIcon size={15} weight="bold" aria-hidden />}
         </span>
       </div>
 

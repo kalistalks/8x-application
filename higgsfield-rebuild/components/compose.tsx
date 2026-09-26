@@ -3,8 +3,7 @@
 import type { MoveSpeed, SequenceItem } from "@/lib/types";
 import { MAX_MOVES } from "@/lib/types";
 import { Section } from "@/components/section";
-import { ImageUpload } from "@/components/image-upload";
-import { SubjectPrompt } from "@/components/subject-prompt";
+import { SceneComposer } from "@/components/scene-composer";
 import { Sequence } from "@/components/sequence";
 import { MoveLibrary } from "@/components/move-library";
 import { GenerateBar } from "@/components/generate-bar";
@@ -24,9 +23,9 @@ type Props = {
 };
 
 /**
- * The Compose screen (spec: First screen). Hosts the numbered sections:
- * 1) image upload, 2) subject prompt, 3) sequence, 4) move library, 5) generate.
- * Sections are added checkpoint by checkpoint; only what's built is rendered.
+ * The Compose screen (spec: First screen). Numbered sections:
+ * 1) scene inputs (prompt + attached reference image), 2) sequence,
+ * 3) move library, 4) generate.
  */
 export function Compose({
   prompt,
@@ -43,15 +42,16 @@ export function Compose({
 }: Props) {
   return (
     <div className="space-y-10">
-      <Section index="1" title="Reference image" hint="optional">
-        <ImageUpload value={imageDataUrl} onChange={onImageChange} />
+      <Section index="1" title="Scene">
+        <SceneComposer
+          prompt={prompt}
+          onPromptChange={onPromptChange}
+          imageDataUrl={imageDataUrl}
+          onImageChange={onImageChange}
+        />
       </Section>
 
-      <Section index="2" title="Subject prompt" hint="optional">
-        <SubjectPrompt value={prompt} onChange={onPromptChange} />
-      </Section>
-
-      <Section index="3" title="Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
+      <Section index="2" title="Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
         <Sequence
           sequence={sequence}
           onRemoveItem={onRemoveItem}
@@ -60,16 +60,12 @@ export function Compose({
         />
       </Section>
 
-      <Section
-        index="4"
-        title="Move library"
-        hint={full ? "sequence full" : undefined}
-      >
+      <Section index="3" title="Move library" hint={full ? "sequence full" : undefined}>
         <MoveLibrary onAddMove={onAddMove} full={full} />
       </Section>
 
-      <Section index="5" title="Generate">
-        <GenerateBar sequence={sequence} onGenerate={onGenerate} />
+      <Section index="4" title="Generate">
+        <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
       </Section>
     </div>
   );

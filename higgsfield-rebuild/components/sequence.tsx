@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, X } from "@phosphor-icons/react";
+import { CaretLeftIcon , CaretRightIcon, X } from "@phosphor-icons/react";
 import { MAX_MOVES, type MoveSpeed, type SequenceItem } from "@/lib/types";
 import { getMove } from "@/lib/moves";
 import { MoveGlyph } from "@/components/move-glyph";
@@ -40,7 +40,10 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
           : `${sequence.length} of ${MAX_MOVES} moves · reorder or remove below`}
       </p>
 
-      <ol className="flex flex-col gap-2.5" aria-label="Camera move sequence">
+      <ol
+        className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:items-stretch"
+        aria-label="Camera move sequence"
+      >
         <AnimatePresence initial={false} mode="popLayout">
           {sequence.map((item, index) => {
             const move = getMove(item.moveId);
@@ -49,14 +52,14 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
               <motion.li
                 key={item.uid}
                 layout={reduce ? false : true}
-                initial={reduce ? false : { opacity: 0, scale: 0.98, y: 6 }}
+                initial={reduce ? false : { opacity: 0, scale: 0.96, y: 6 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.98, y: 6 }}
+                exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: 6 }}
                 transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                <div className="rounded-md border border-line bg-surface-2 px-4 py-3.5">
-                  {/* Top row: position · glyph · name · reorder · remove. */}
-                  <div className="flex items-center gap-3">
+                <div className="flex h-full flex-col gap-3 rounded-md border border-line bg-surface-2 p-3.5">
+                  {/* Top row: position · glyph · name · remove. */}
+                  <div className="flex items-center gap-2.5">
                     <span className="font-mono text-xs text-accent tabular-nums">
                       {pos(index + 1)}
                     </span>
@@ -66,64 +69,56 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
                       {move.name}
                     </span>
-
-                    {/* Reorder controls. */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => onMoveItem(item.uid, -1)}
-                        disabled={index === 0}
-                        aria-label={`Move ${move.name} earlier`}
-                        title="Move earlier"
-                        className={cn(
-                          "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
-                          index === 0
-                            ? "cursor-not-allowed text-ink-faint/40"
-                            : "text-ink-muted hover:border-line-strong hover:text-ink",
-                        )}
-                      >
-                        <ArrowLeft size={14} weight="bold" aria-hidden />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => onMoveItem(item.uid, 1)}
-                        disabled={index === sequence.length - 1}
-                        aria-label={`Move ${move.name} later`}
-                        title="Move later"
-                        className={cn(
-                          "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
-                          index === sequence.length - 1
-                            ? "cursor-not-allowed text-ink-faint/40"
-                            : "text-ink-muted hover:border-line-strong hover:text-ink",
-                        )}
-                      >
-                        <ArrowRight size={14} weight="bold" aria-hidden />
-                      </button>
-                    </div>
-
-                    {/* Divider + remove. */}
-                    <span aria-hidden className="h-6 w-px bg-line" />
                     <button
                       type="button"
                       onClick={() => onRemoveItem(item.uid)}
                       aria-label={`Remove ${move.name} from position ${pos(index + 1)}`}
                       title="Remove"
-                      className="grid h-7 w-7 place-items-center rounded-sm text-ink-faint transition-colors hover:bg-surface-3 hover:text-ink"
+                      className="grid h-7 w-7 shrink-0 place-items-center rounded-sm text-ink-faint transition-colors hover:bg-surface-3 hover:text-ink"
                     >
                       <X size={15} weight="bold" aria-hidden />
                     </button>
                   </div>
 
-                  {/* Second row: speed label + toggle. */}
-                  <div className="mt-3 flex items-center gap-3">
-                    <span className="text-xs text-ink-faint">Speed</span>
-                    <div className="max-w-xs flex-1">
-                      <SpeedToggle
-                        value={item.speed}
-                        onChange={(speed) => onSetItemSpeed(item.uid, speed)}
-                        moveName={move.name}
-                      />
-                    </div>
+                  {/* Speed row. */}
+                  <SpeedToggle
+                    value={item.speed}
+                    onChange={(speed) => onSetItemSpeed(item.uid, speed)}
+                    moveName={move.name}
+                  />
+
+                  {/* Reorder controls, centered at the base of the chip. */}
+                  <div className="mt-auto flex items-center justify-center gap-1.5 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => onMoveItem(item.uid, -1)}
+                      disabled={index === 0}
+                      aria-label={`Move ${move.name} earlier`}
+                      title="Move earlier"
+                      className={cn(
+                        "grid h-7 w-9 place-items-center rounded-sm border border-line transition-colors",
+                        index === 0
+                          ? "cursor-not-allowed text-ink-faint/40"
+                          : "text-ink-muted hover:border-line-strong hover:text-ink",
+                      )}
+                    >
+                      <CaretLeftIcon size={14} weight="bold" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onMoveItem(item.uid, 1)}
+                      disabled={index === sequence.length - 1}
+                      aria-label={`Move ${move.name} later`}
+                      title="Move later"
+                      className={cn(
+                        "grid h-7 w-9 place-items-center rounded-sm border border-line transition-colors",
+                        index === sequence.length - 1
+                          ? "cursor-not-allowed text-ink-faint/40"
+                          : "text-ink-muted hover:border-line-strong hover:text-ink",
+                      )}
+                    >
+                      <CaretRightIcon size={14} weight="bold" aria-hidden />
+                    </button>
                   </div>
                 </div>
               </motion.li>
@@ -141,7 +136,7 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
               transition={{ duration: 0.2, ease: "easeOut" }}
               aria-hidden
             >
-              <div className="flex items-center gap-3 rounded-md border border-dashed border-line bg-surface/30 px-4 py-4">
+              <div className="flex h-full min-h-[128px] flex-col items-center justify-center gap-1 rounded-md border border-dashed border-line bg-surface/30 p-3.5 text-center">
                 <span className="font-mono text-xs text-ink-faint tabular-nums">
                   + {pos(slotIndex + 1)}
                 </span>

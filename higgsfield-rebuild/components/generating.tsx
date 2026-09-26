@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check } from "@phosphor-icons/react";
+import { CheckIcon } from "@phosphor-icons/react";
 import type { SequenceItem } from "@/lib/types";
 import { getMove, getMoveName } from "@/lib/moves";
 import { MoveGlyph } from "@/components/move-glyph";
@@ -81,9 +81,21 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
         {/* Left: preview frame with scan line. */}
         <div className="relative aspect-video w-full overflow-hidden border-b border-line bg-surface md:border-b-0 md:border-r">
           {imageDataUrl ? (
-            <Image src={imageDataUrl} alt="" fill unoptimized className="object-cover opacity-80" />
+            <Image src={imageDataUrl} alt="" fill unoptimized className="object-cover opacity-90" />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 to-canvas" />
+            // No reference uploaded: fill with a graphite field + faint grid so
+            // the scan has a surface to sweep and the frame never looks empty.
+            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface to-canvas">
+              <div
+                aria-hidden
+                className="absolute inset-0 opacity-[0.15]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(var(--color-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-line) 1px, transparent 1px)",
+                  backgroundSize: "32px 32px",
+                }}
+              />
+            </div>
           )}
 
           {/* Corner brackets. */}
@@ -188,7 +200,7 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
                           : "border-line text-ink-faint",
                     )}
                   >
-                    {done ? <Check size={12} weight="bold" aria-hidden /> : i + 1}
+                    {done ? <CheckIcon size={12} weight="bold" aria-hidden /> : i + 1}
                   </span>
                   <span className={cn(active ? "text-ink" : done ? "text-ink-muted" : "text-ink-faint")}>
                     {stage.title.replace(/\.\.\.$/, "")}
