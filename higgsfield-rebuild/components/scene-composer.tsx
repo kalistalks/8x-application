@@ -62,13 +62,6 @@ export function SceneComposer({ prompt, onPromptChange, imageDataUrl, onImageCha
 
   return (
     <div className="space-y-2">
-      <div className="flex items-baseline justify-between">
-        <label htmlFor={id} className="text-sm text-ink">
-          Describe your scene
-        </label>
-        <span className="text-xs font-medium uppercase tracking-wide text-accent">Required</span>
-      </div>
-
       {/* Composer surface: textarea + footer with the image chip and count. */}
       <div className="rounded-md border border-line bg-surface focus-within:border-line-strong">
         <textarea

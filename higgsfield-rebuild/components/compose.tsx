@@ -48,7 +48,7 @@ export function Compose({
             <p>Build up to three moves in the order they should happen.</p>
       </section>
 
-      <Section index="1" title="Scene">
+      <Section index="01" title="Describe your scene" hint="REQUIRED">
         <SceneComposer
           prompt={prompt}
           onPromptChange={onPromptChange}
@@ -57,7 +57,7 @@ export function Compose({
         />
       </Section>
 
-      <Section index="2" title="Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
+      <Section index="02" title="Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
         <Sequence
           sequence={sequence}
           onRemoveItem={onRemoveItem}
@@ -66,13 +66,10 @@ export function Compose({
         />
       </Section>
 
-      <Section index="3" title="Move library" hint={full ? "sequence full" : undefined}>
+      <Section index="03" title="Move library" hint={full ? "sequence full" : undefined}>
         <MoveLibrary onAddMove={onAddMove} full={full} />
       </Section>
-
-      <Section index="4" title="Generate">
         <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
-      </Section>
     </div>
   );
 }

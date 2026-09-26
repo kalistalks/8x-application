@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowClockwise, DownloadSimple, Repeat, Check } from "@phosphor-icons/react";
+import { ArrowClockwiseIcon, RepeatIcon, DownloadSimpleIcon, CheckIcon } from "@phosphor-icons/react";
 import type { SequenceItem } from "@/lib/types";
 import { getMove, getMoveName } from "@/lib/moves";
 import { MoveGlyph } from "@/components/move-glyph";
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  * fine — it does not reflect the chosen sequence. We reuse one of the move
  * clips as the mock output (flagged in the README).
  */
-const RESULT_CLIP = "/moves/videos/orbit.mp4";
+const RESULT_CLIP = "/mock.mp4";
 const RESULT_FILENAME = "higgsfield-shot.mp4";
 
 type Props = {
@@ -58,7 +58,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
           </h2>
         </div>
         <span className="mt-1 inline-flex shrink-0 items-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-xs font-medium text-ink">
-          <Check size={13} weight="bold" className="text-accent" aria-hidden />
+          <CheckIcon size={13} weight="bold" className="text-accent" aria-hidden />
           Render complete
         </span>
       </div>
@@ -116,7 +116,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
                 : "border-line text-ink-muted hover:border-line-strong hover:text-ink",
             )}
           >
-            <Repeat size={15} weight="bold" aria-hidden />
+            <RepeatIcon size={15} weight="bold" aria-hidden />
             Loop {loop ? "on" : "off"}
           </button>
 
@@ -134,14 +134,14 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
             className="mt-6 inline-flex items-center justify-between gap-2 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-hover"
           >
             Download video
-            <DownloadSimple size={17} weight="bold" aria-hidden />
+            <DownloadSimpleIcon size={17} weight="bold" aria-hidden />
           </a>
           <button
             type="button"
             onClick={onStartOver}
             className="mt-2.5 inline-flex items-center justify-center gap-2 rounded-md border border-line px-4 py-2.5 text-sm text-ink-muted transition-colors hover:border-line-strong hover:text-ink"
           >
-            <ArrowClockwise size={15} weight="bold" aria-hidden />
+            <ArrowClockwiseIcon size={15} weight="bold" aria-hidden />
             Start over
           </button>
 

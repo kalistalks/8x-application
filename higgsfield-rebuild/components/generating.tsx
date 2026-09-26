@@ -17,7 +17,7 @@ const STAGES = [
   },
   {
     title: "Applying camera choreography...",
-    note: "Mapping each move onto the shot with its speed treatment.",
+    note: "Mapping each move onto the shot according to speed.",
   },
   {
     title: "Rendering...",
@@ -83,19 +83,17 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
           {imageDataUrl ? (
             <Image src={imageDataUrl} alt="" fill unoptimized className="object-cover opacity-90" />
           ) : (
-            // No reference uploaded: fill with a graphite field + faint grid so
-            // the scan has a surface to sweep and the frame never looks empty.
-            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-surface to-canvas">
-              <div
-                aria-hidden
-                className="absolute inset-0 opacity-[0.15]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(var(--color-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-line) 1px, transparent 1px)",
-                  backgroundSize: "32px 32px",
-                }}
-              />
-            </div>
+            // No reference uploaded: play the mock render (muted) so the frame
+            // shows the build coming together rather than sitting empty.
+            <video
+              src="/mock.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover opacity-80"
+            />
           )}
 
           {/* Corner brackets. */}

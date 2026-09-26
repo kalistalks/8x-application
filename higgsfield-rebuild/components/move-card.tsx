@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PlusIcon, CheckIcon } from "@phosphor-icons/react";
 import type { CameraMove } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,23 @@ type Props = {
  * graphite card language with the sequence chips.
  */
 export function MoveCard({ move, onAdd, disabled = false }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [added, setAdded] = useState(false);
+
+  const play = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    void v.play().catch(() => {
+      /* hover play can reject; the poster stays, which is fine */
+    });
+  };
+
+  const stop = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.pause();
+    v.currentTime = 0;
+  };
 
   const handleClick = () => {
     if (disabled) return;
@@ -34,6 +50,10 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
     <button
       type="button"
       onClick={handleClick}
+      onMouseEnter={play}
+      onMouseLeave={stop}
+      onFocus={play}
+      onBlur={stop}
       disabled={disabled}
       aria-label={`Add ${move.name} to sequence — ${move.description}`}
       className={cn(
@@ -43,12 +63,13 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
           : "hover:border-line-strong hover:bg-surface-3",
       )}
     >
-      {/* Preview clip is the main visual: loops by default. */}
+      {/* Poster shows at rest (thumbnail); the clip plays on hover/focus. */}
       <div className="relative aspect-video w-full overflow-hidden bg-surface">
+        {/* No poster attr: the clip's own first frame is the resting thumbnail;
+            it plays on hover/focus. */}
         <video
+          ref={videoRef}
           src={move.clip}
-          poster={move.poster}
-          autoPlay
           muted
           loop
           playsInline
@@ -57,6 +78,10 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
           tabIndex={-1}
           className="h-full w-full object-cover"
         />
+        {/* Hover hint, bottom-left: fades out while the clip plays. */}
+        <span className="absolute bottom-2 left-2 rounded-sm bg-canvas/70 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-ink-muted backdrop-blur transition-opacity group-hover:opacity-0">
+          Preview motion
+        </span>
         {/* Add affordance, top-right: + normally, check briefly after adding. */}
         <span
           className={cn(
