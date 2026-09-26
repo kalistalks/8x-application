@@ -65,10 +65,9 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
 
       {/* Two columns: video + sidebar. */}
       <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
-        {/* Video. self-start so the frame only takes the video's own height
-            (the grid would otherwise stretch it to the taller sidebar, leaving
-            black space). h-auto w-full lets the clip fill the width edge-to-edge. */}
-        <div className="relative self-start overflow-hidden rounded-lg border border-line bg-black">
+        {/* Video. The frame stretches to match the sidebar's height (grid
+            default); object-cover crops the clip to fill it with no black space. */}
+        <div className="relative overflow-hidden rounded-lg border border-line bg-black">
           <video
             ref={videoRef}
             src={RESULT_CLIP}
@@ -78,7 +77,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
             loop={loop}
             playsInline
             controls
-            className="block h-auto w-full"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
 
