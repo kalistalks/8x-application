@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MAX_MOVES, type MoveSpeed, type SequenceItem, type WorkspaceState } from "@/lib/types";
 import { Compose } from "@/components/compose";
+import { Generating } from "@/components/generating";
 
 /** Per-instance id for a sequence item (stable across reorders). */
 function newUid(): string {
@@ -92,40 +93,33 @@ export function Workspace() {
             />
           )}
           {state === "generating" && (
-            <StatePlaceholder title="Generating" note="Staged status text + progress bar land here." />
+            <Generating
+              sequence={sequence}
+              onCancel={() => setState("compose")}
+              onComplete={() => setState("result")}
+            />
           )}
           {state === "result" && (
-            <StatePlaceholder title="Result" note="Mocked video, sequence summary, download, start over land here." />
+            // Result screen lands in Step 8. Temporary panel with a working
+            // Start over so the flow is complete-able during review.
+            <div className="grid min-h-[320px] place-items-center rounded-lg border border-dashed border-line bg-surface/40 p-10 text-center">
+              <div>
+                <p className="text-lg font-semibold text-ink">Your shot is ready.</p>
+                <p className="mt-1 max-w-sm text-sm text-ink-muted">
+                  Result screen (video, summary, download, disclosure) lands in Step 8.
+                </p>
+                <button
+                  type="button"
+                  onClick={startOver}
+                  className="mt-4 rounded-md border border-line px-4 py-2 text-sm text-ink-muted hover:border-line-strong hover:text-ink"
+                >
+                  Start over
+                </button>
+              </div>
+            </div>
           )}
         </motion.div>
       </AnimatePresence>
-
-      {/* Temporary scaffold controls to prove the state machine + crossfade.
-          Removed once real Compose / Generate / Result wiring lands. */}
-      <div className="mt-8 flex flex-wrap gap-2 border-t border-line pt-4 text-xs text-ink-faint">
-        <span className="mr-1 self-center">scaffold nav:</span>
-        {(["compose", "generating", "result"] as WorkspaceState[]).map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => (s === "compose" ? startOver() : setState(s))}
-            className="rounded-sm border border-line px-2 py-1 text-ink-muted hover:border-line-strong hover:text-ink"
-          >
-            {s}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StatePlaceholder({ title, note }: { title: string; note: string }) {
-  return (
-    <div className="grid min-h-[320px] place-items-center rounded-lg border border-dashed border-line bg-surface/40 p-10 text-center">
-      <div>
-        <p className="text-lg font-semibold text-ink">{title}</p>
-        <p className="mt-1 max-w-sm text-sm text-ink-muted">{note}</p>
-      </div>
     </div>
   );
 }
