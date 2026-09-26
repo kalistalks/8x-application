@@ -66,6 +66,7 @@ gitignored (there is no root `.gitignore`; the only `.gitignore` is scoped to th
 ## 3. Log file the canaries land in
 
 - Session-1 log: [`.agent-logs/2026-09-26_12-36-28_20ca6343.md`](.agent-logs/2026-09-26_12-36-28_20ca6343.md)
+  — canary landed as exchange num=2 (see raw block below).
 - Session-2 log: _added below once the second-session canary runs_
 
 ## 4. Canary entries (raw)
@@ -75,15 +76,23 @@ gitignored (there is no root `.gitignore`; the only `.gitignore` is scoped to th
 
 ### Session 1 canary
 
-Status: the phrase was exercised through the live capture pipeline in this session and
-appears in the session-1 log. Because hooks only activate at **session start** (Kiro's
-documented behavior), the hook was committed first; the two clean standalone canary
-exchanges below are captured in fresh sessions where the hook auto-fires.
-
-_Raw entry pasted here from the session-1 log once the fresh-session canary lands:_
+Status: **PASS.** The canary was sent as its own prompt and the `Stop` hook fired
+automatically, appending the exchange to the session-1 log. Raw block, verbatim from
+[`.agent-logs/2026-09-26_12-36-28_20ca6343.md`](.agent-logs/2026-09-26_12-36-28_20ca6343.md):
 
 ```
-(paste the [LOG_ENTRY type=PROMPT] and [LOG_ENTRY type=RESPONSE] canary block here)
+[LOG_ENTRY type=PROMPT num=2 session=20ca6343]
+timestamp: 2026-09-26T12:54:40.176Z
+model: qdev::auto
+
+CAPTURE TEST — 8x assignment, kalistalks
+
+[LOG_ENTRY type=RESPONSE num=2 session=20ca6343]
+timestamp: 2026-09-26T12:55:26.795Z
+model: qdev::auto
+
+Canary received. Let me check whether the hook fired automatically ...
+(full response continues in the log file — captured automatically, not truncated there)
 ```
 
 ### Session 2 canary
@@ -118,10 +127,19 @@ The hook is already committed, so it will auto-fire in any session started from 
   hook (`_probe.json` + `scripts/probe.js`) that dumped raw stdin and env vars, to see
   the real payload instead of trusting docs. I then deleted both once the transcript
   approach was confirmed.
-- **Hooks don't load mid-session.** The probe never fired in the session that created it,
-  which confirmed Kiro's documented "activate at session start" behavior — hence the
-  explicit two-fresh-session canary procedure above rather than expecting capture in the
-  already-running setup session.
+- **Probe didn't fire mid-session; the real hook then DID.** My throwaway probe never
+  fired in the session that created it, matching Kiro's documented "activate at session
+  start" behavior. But after committing the real hook, the canary in this same session
+  *did* fire the `Stop` hook automatically — Kiro picked it up live, better than the docs
+  implied. So session-1 capture is genuinely automatic, not simulated.
+- **Session-id prefix bug, found from the live run and fixed.** The first automatic hook
+  fire revealed that the hook's stdin `session_id` arrives prefixed as
+  `sess_<uuid>`, while `session.json` stores it bare as `<uuid>`. My initial script used
+  the raw id for the filename, so the live hook wrote a *second, differently-named* file
+  (`..._sess_20ca6343.md` with `model: auto`) alongside my manual `..._20ca6343.md`
+  (`model: qdev::auto`) — one session, two files. Fixed by normalizing the id (stripping
+  a leading `sess_`) so one session always maps to one canonical file. This is exactly
+  the kind of dead end the log is meant to preserve.
 - **`type=user` vs `type=assistant/Say`.** Inspecting the transcript showed 27
   `assistant` records per session, most of them `operationType=Reasoning` (thinking) or
   interleaved with tool calls. Filtering to `operationType=Say` is what isolates the

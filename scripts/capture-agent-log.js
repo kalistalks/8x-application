@@ -197,7 +197,10 @@ function firstPromptStamp(exchanges) {
 async function main() {
   const raw = await readStdin();
   const env = safeParse(raw) || {};
-  const sessionId = env.session_id || env.sessionId || process.env.KIRO_SESSION_ID;
+  const rawSessionId = env.session_id || env.sessionId || process.env.KIRO_SESSION_ID;
+  // Normalize: the id can arrive bare (20ca6343-...) or transcript-prefixed
+  // (sess_20ca6343-...). Strip the prefix so one session maps to one canonical file.
+  const sessionId = rawSessionId ? String(rawSessionId).replace(/^sess_/, "") : rawSessionId;
 
   // The repo root: prefer cwd from the hook, else this script's parent.
   const repoRoot = env.cwd && fs.existsSync(env.cwd)
