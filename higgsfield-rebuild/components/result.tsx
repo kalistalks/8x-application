@@ -52,7 +52,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
       {/* Header: eyebrow + heading, with a render-complete badge. */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-accent">Shot complete</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">Shot complete</p>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
             Your shot is ready.
           </h2>
@@ -70,12 +70,13 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
           <video
             ref={videoRef}
             src={RESULT_CLIP}
+            poster="/preview-poster.jpg"
             autoPlay
             muted
             loop={loop}
             playsInline
             controls
-            className="aspect-video w-full"
+            className="aspect-video w-full object-cover"
           />
         </div>
 
@@ -102,7 +103,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
               );
             })}
           </ol>
-          {summary && <p className="mt-3 text-xs text-ink-faint">{summary}</p>}
+          {/* {summary && <p className="mt-3 text-xs text-ink-faint">{summary}</p>} */}
 
           {/* Loop toggle for the playback. */}
           <button
@@ -131,10 +132,10 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
           <a
             href={RESULT_CLIP}
             download={RESULT_FILENAME}
-            className="mt-6 inline-flex items-center justify-between gap-2 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-hover"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-accent-ink transition-colors hover:bg-accent-hover"
           >
-            Download video
             <DownloadSimpleIcon size={17} weight="bold" aria-hidden />
+            Download video
           </a>
           <button
             type="button"

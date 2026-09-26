@@ -16,7 +16,7 @@ const STAGES = [
     note: "Locking the order and transitions between your moves.",
   },
   {
-    title: "Applying camera choreography...",
+    title: "Applying motion...",
     note: "Mapping each move onto the shot according to speed.",
   },
   {
@@ -92,6 +92,7 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
               loop
               playsInline
               aria-hidden
+              poster="/preview-poster.jpg"
               className="absolute inset-0 h-full w-full object-cover opacity-80"
             />
           )}

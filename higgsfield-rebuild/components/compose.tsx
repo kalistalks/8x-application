@@ -41,12 +41,19 @@ export function Compose({
   onGenerate,
 }: Props) {
   return (
-    <div className="space-y-10">
-      <section className="page-intro">
-            <div className="eyebrow">CAMERA CHOREOGRAPHY</div>
-            <h1>Camera sequence</h1>
-            <p>Build up to three moves in the order they should happen.</p>
-      </section>
+    <div className="space-y-6">
+      {/* Hero header. Explicit margins (not space-y) so line rhythm is reliable. */}
+      <header className="pb-2 pt-4 text-center">
+        <p className="text-xs font-extrabold uppercase tracking-widest text-accent">
+          Camera Choreography
+        </p>
+        <h1 className="mt-3 text-4xl font-bold leading-tight tracking-tight text-ink">
+          Camera Sequence
+        </h1>
+        <p className="mt-3 text-sm text-ink-muted">
+          Build up to three moves in the order they should happen.
+        </p>
+      </header>
 
       <Section index="01" title="Describe your scene" hint="REQUIRED">
         <SceneComposer
@@ -57,7 +64,7 @@ export function Compose({
         />
       </Section>
 
-      <Section index="02" title="Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
+      <Section index="01" title="Your Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
         <Sequence
           sequence={sequence}
           onRemoveItem={onRemoveItem}
@@ -66,10 +73,11 @@ export function Compose({
         />
       </Section>
 
-      <Section index="03" title="Move library" hint={full ? "sequence full" : undefined}>
+      <Section index="02" title="Move Library" hint={full ? "sequence full" : undefined}>
         <MoveLibrary onAddMove={onAddMove} full={full} />
       </Section>
-        <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
+
+      <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
     </div>
   );
 }
