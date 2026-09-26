@@ -26,7 +26,7 @@ const STAGES = [
 ] as const;
 
 /** Total render time — DoD says ~6–8s. Split evenly across the three stages. */
-const TOTAL_MS = 6600;
+const TOTAL_MS = 4400;
 const TICK_MS = 60;
 
 type Props = {
