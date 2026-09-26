@@ -1,0 +1,25 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Agent Log Capture (turn end)",
+      "trigger": "Stop",
+      "description": "On end of every agent turn, rebuild the per-session prompt/response log in .agent-logs/ from Kiro's session transcript.",
+      "action": {
+        "type": "command",
+        "command": "node scripts/capture-agent-log.js",
+        "timeout": 30
+      }
+    },
+    {
+      "name": "Agent Log Capture (prompt submit)",
+      "trigger": "UserPromptSubmit",
+      "description": "On every prompt submission, refresh the per-session prompt/response log so prompts land immediately.",
+      "action": {
+        "type": "command",
+        "command": "node scripts/capture-agent-log.js",
+        "timeout": 30
+      }
+    }
+  ]
+}
