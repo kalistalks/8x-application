@@ -22,7 +22,7 @@ export function GenerateBar({ sequence, onGenerate }: Props) {
   return (
     <div className="flex flex-col gap-3 rounded-md border border-line bg-surface/50 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
-        <p className="text-xs uppercase tracking-wide text-ink-faint">Queued sequence</p>
+        <p className="text-xs uppercase tracking-wide text-ink-faint">{`${sequence.length} moved queued`}</p>
         <p className={cn("mt-0.5 truncate text-sm", hasMoves ? "text-ink" : "text-ink-faint")}>
           {hasMoves ? summary : "Add at least one move to generate."}
         </p>

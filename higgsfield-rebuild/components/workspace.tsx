@@ -95,6 +95,7 @@ export function Workspace() {
           {state === "generating" && (
             <Generating
               sequence={sequence}
+              imageDataUrl={imageDataUrl}
               onCancel={() => setState("compose")}
               onComplete={() => setState("result")}
             />

@@ -1,37 +1,48 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { X, Check, CircleNotch } from "@phosphor-icons/react";
+import { Check } from "@phosphor-icons/react";
 import type { SequenceItem } from "@/lib/types";
-import { getMoveName } from "@/lib/moves";
+import { getMove, getMoveName } from "@/lib/moves";
+import { MoveGlyph } from "@/components/move-glyph";
 import { cn } from "@/lib/utils";
 
-/** The three render stages (spec section 6). */
+/** The three render stages with their supporting copy (spec section 6). */
 const STAGES = [
-  "Compiling sequence...",
-  "Applying camera choreography...",
-  "Rendering...",
+  {
+    title: "Compiling sequence...",
+    note: "Locking the order and transitions between your moves.",
+  },
+  {
+    title: "Applying camera choreography...",
+    note: "Mapping each move onto the shot with its speed treatment.",
+  },
+  {
+    title: "Rendering...",
+    note: "Compositing the final frames of your shot.",
+  },
 ] as const;
 
 /** Total render time — DoD says ~6–8s. Split evenly across the three stages. */
 const TOTAL_MS = 6600;
-const STAGE_MS = TOTAL_MS / STAGES.length;
 const TICK_MS = 60;
 
 type Props = {
   sequence: SequenceItem[];
+  imageDataUrl: string | null;
   onCancel: () => void;
   onComplete: () => void;
 };
 
 /**
- * The Generating state (spec: Second screen). Runs a staged status-text timer
- * with an indeterminate-feeling progress bar (0 -> 100%), shows the current step
- * with completed/active/upcoming stages, keeps the queued sequence visible, and
- * auto-advances to the Result. Cancel returns to Compose with state intact.
+ * The Generating state (spec: Second screen). Two-column workspace: a preview
+ * frame on the left with a scan line sweeping top -> bottom, and staged status +
+ * progress on the right. Keeps the queued sequence visible, auto-advances to the
+ * Result, and Cancel returns to Compose with state intact.
  */
-export function Generating({ sequence, onCancel, onComplete }: Props) {
+export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Props) {
   const reduce = useReducedMotion();
   const [progress, setProgress] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -48,7 +59,6 @@ export function Generating({ sequence, onCancel, onComplete }: Props) {
       const pct = Math.min(100, (elapsed / TOTAL_MS) * 100);
       setProgress(pct);
       if (pct >= 100) {
-        // Small beat at 100% before advancing.
         timer = window.setTimeout(() => completeRef.current(), 350);
       } else {
         timer = window.setTimeout(() => (raf = requestAnimationFrame(tick)), TICK_MS);
@@ -63,96 +73,146 @@ export function Generating({ sequence, onCancel, onComplete }: Props) {
   }, []);
 
   const currentStage = Math.min(STAGES.length - 1, Math.floor((progress / 100) * STAGES.length));
-  const summary = sequence.map((s) => getMoveName(s.moveId)).join(" → ");
   const rounded = Math.round(progress);
 
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center py-10 text-center">
-      <span className="grid h-12 w-12 place-items-center rounded-full border border-line bg-surface text-accent">
-        <CircleNotch size={22} className={reduce ? "" : "animate-spin"} aria-hidden />
-      </span>
+    <div className="overflow-hidden rounded-lg border border-line bg-surface/40">
+      <div className="grid gap-0 md:grid-cols-2">
+        {/* Left: preview frame with scan line. */}
+        <div className="relative aspect-video w-full overflow-hidden border-b border-line bg-surface md:border-b-0 md:border-r">
+          {imageDataUrl ? (
+            <Image src={imageDataUrl} alt="" fill unoptimized className="object-cover opacity-80" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-surface-2 to-canvas" />
+          )}
 
-      {/* Live-updating status line (spec: aria-live). */}
-      <p aria-live="polite" className="mt-5 text-base font-medium text-ink">
-        {STAGES[currentStage]}
-      </p>
-      <p className="mt-1 text-sm text-ink-faint">
-        Step {currentStage + 1} of {STAGES.length}
-      </p>
+          {/* Corner brackets. */}
+          <Corner className="left-4 top-4 border-l-2 border-t-2" />
+          <Corner className="right-4 top-4 border-r-2 border-t-2" />
+          <Corner className="bottom-4 left-4 border-b-2 border-l-2" />
+          <Corner className="bottom-4 right-4 border-b-2 border-r-2" />
 
-      {/* Progress bar + approximate percentage. */}
-      <div className="mt-6 w-full">
-        <div
-          className="h-1.5 w-full overflow-hidden rounded-full bg-surface-3"
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={rounded}
-          aria-label="Rendering progress"
-        >
-          <motion.div
-            className="h-full rounded-full bg-accent"
-            animate={{ width: `${progress}%` }}
-            transition={{ ease: "linear", duration: TICK_MS / 1000 }}
-          />
+          {/* Scan line sweeping top -> bottom (paused under reduced motion). */}
+          {!reduce && (
+            <span
+              aria-hidden
+              className="scan-line absolute inset-x-0 h-px bg-accent shadow-[0_0_12px_2px_rgba(198,242,78,0.55)]"
+            />
+          )}
+
+          <span className="absolute left-4 top-4 translate-x-3 rounded-sm bg-canvas/70 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-ink-muted backdrop-blur">
+            Preview build
+          </span>
+          <span className="absolute right-4 top-4 -translate-x-3 rounded-sm bg-canvas/70 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-accent backdrop-blur">
+            {sequence.length} moves locked
+          </span>
         </div>
-        <p className="mt-2 text-right font-mono text-xs text-ink-faint tabular-nums">
-          {rounded}%
-        </p>
-      </div>
 
-      {/* Stage checklist: completed / active / upcoming. */}
-      <ol className="mt-6 w-full space-y-2 text-left">
-        {STAGES.map((stage, i) => {
-          const done = i < currentStage;
-          const active = i === currentStage;
-          return (
-            <li
-              key={stage}
-              className={cn(
-                "flex items-center gap-2.5 rounded-md border px-3 py-2 text-sm transition-colors",
-                active
-                  ? "border-line-strong bg-surface-2 text-ink"
-                  : done
-                    ? "border-line bg-surface/40 text-ink-muted"
-                    : "border-line bg-surface/20 text-ink-faint",
-              )}
-            >
-              <span
-                className={cn(
-                  "grid h-5 w-5 shrink-0 place-items-center rounded-full border text-[10px]",
-                  done
-                    ? "border-accent bg-accent text-accent-ink"
-                    : active
-                      ? "border-accent text-accent"
-                      : "border-line text-ink-faint",
-                )}
-              >
-                {done ? <Check size={12} weight="bold" aria-hidden /> : i + 1}
+        {/* Right: status + progress. */}
+        <div className="flex flex-col p-6 sm:p-8">
+          <div className="flex items-baseline justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-accent">
+              Building your shot
+            </p>
+            <p className="text-[11px] uppercase tracking-wide text-ink-faint">
+              Step {currentStage + 1} of {STAGES.length}
+            </p>
+          </div>
+
+          <h2
+            aria-live="polite"
+            className="mt-3 text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
+          >
+            {STAGES[currentStage].title}
+          </h2>
+          <p className="mt-3 text-sm text-ink-muted">{STAGES[currentStage].note}</p>
+
+          {/* Queued moves, mirroring the sequence chip language. */}
+          <div className="mt-6 grid grid-cols-3 gap-2.5">
+            {sequence.map((item, i) => {
+              const move = getMove(item.moveId);
+              if (!move) return null;
+              return (
+                <div
+                  key={item.uid}
+                  className="flex flex-col items-center gap-1.5 rounded-md border border-line bg-surface-2 px-2 py-3 text-center"
+                >
+                  <span className="self-start font-mono text-[10px] text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <MoveGlyph moveId={move.id} className="h-7 w-7 text-ink-muted" />
+                  <span className="text-xs font-medium text-ink">{move.name}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Progress. */}
+          <div className="mt-7">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-ink-faint">
+                Generating
               </span>
-              <span>{stage}</span>
-              {done && <span className="sr-only">completed</span>}
-              {active && <span className="sr-only">in progress</span>}
-            </li>
-          );
-        })}
-      </ol>
+              <span className="font-mono text-xs text-accent tabular-nums">{rounded}%</span>
+            </div>
+            <div
+              className="mt-2 h-1 w-full overflow-hidden rounded-full bg-surface-3"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={rounded}
+              aria-label="Rendering progress"
+            >
+              <motion.div
+                className="h-full rounded-full bg-accent"
+                animate={{ width: `${progress}%` }}
+                transition={{ ease: "linear", duration: TICK_MS / 1000 }}
+              />
+            </div>
+          </div>
 
-      {/* Queued sequence stays visible while rendering. */}
-      {summary && (
-        <p className="mt-6 text-xs text-ink-faint">
-          <span className="text-ink-muted">Sequence:</span> {summary}
-        </p>
-      )}
+          {/* Stage checklist. */}
+          <ol className="mt-5 space-y-3">
+            {STAGES.map((stage, i) => {
+              const done = i < currentStage;
+              const active = i === currentStage;
+              return (
+                <li key={stage.title} className="flex items-center gap-3 text-sm">
+                  <span
+                    className={cn(
+                      "grid h-6 w-6 shrink-0 place-items-center rounded-full border text-[11px]",
+                      done
+                        ? "border-accent bg-accent text-accent-ink"
+                        : active
+                          ? "border-accent text-accent"
+                          : "border-line text-ink-faint",
+                    )}
+                  >
+                    {done ? <Check size={12} weight="bold" aria-hidden /> : i + 1}
+                  </span>
+                  <span className={cn(active ? "text-ink" : done ? "text-ink-muted" : "text-ink-faint")}>
+                    {stage.title.replace(/\.\.\.$/, "")}
+                  </span>
+                  {done && <span className="sr-only">completed</span>}
+                  {active && <span className="sr-only">in progress</span>}
+                </li>
+              );
+            })}
+          </ol>
 
-      <button
-        type="button"
-        onClick={onCancel}
-        className="mt-8 inline-flex items-center gap-1.5 rounded-md border border-line px-4 py-2 text-sm text-ink-muted transition-colors hover:border-line-strong hover:text-ink"
-      >
-        <X size={15} weight="bold" aria-hidden />
-        Cancel
-      </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="mt-8 self-start rounded-md border border-line px-4 py-2 text-sm text-ink-muted transition-colors hover:border-line-strong hover:text-ink"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
     </div>
   );
+}
+
+function Corner({ className }: { className?: string }) {
+  return <span aria-hidden className={cn("absolute h-5 w-5 border-ink-muted/70", className)} />;
 }

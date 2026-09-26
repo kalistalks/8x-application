@@ -57,6 +57,28 @@ body {
   border-radius: var(--radius-xs);
 }
 
+/* Generating preview: a subtle scan line sweeping top -> bottom over the frame. */
+@keyframes scan-sweep {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.scan-line {
+  animation: scan-sweep 2.4s ease-in-out infinite;
+}
+
 /* Respect reduced motion globally (spec: Motion and feedback / Accessibility). */
 @media (prefers-reduced-motion: reduce) {
   *,
