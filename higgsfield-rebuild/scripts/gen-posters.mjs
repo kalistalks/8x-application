@@ -1,0 +1,39 @@
+// Generates placeholder poster SVGs for each move card.
+// Run: node scripts/gen-posters.mjs
+import { mkdirSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const outDir = join(__dirname, "..", "public", "moves", "posters");
+mkdirSync(outDir, { recursive: true });
+
+const moves = [
+  ["tilt-up", "Tilt Up"],
+  ["pan-left", "Pan Left"],
+  ["orbit", "Orbit"],
+  ["crane-up", "Crane Up"],
+  ["snorricam", "Snorricam"],
+  ["pov", "POV"],
+  ["rack-focus", "Rack Focus"],
+  ["robot-arm", "Robot Arm"],
+];
+
+for (const [id, name] of moves) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1a1d1a"/>
+      <stop offset="1" stop-color="#0f110f"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="180" fill="url(#g)"/>
+  <rect x="0.5" y="0.5" width="319" height="179" fill="none" stroke="#2a2e2a"/>
+  <circle cx="160" cy="78" r="30" fill="none" stroke="#c6f24e" stroke-opacity="0.5" stroke-width="1.5"/>
+  <circle cx="160" cy="78" r="4" fill="#c6f24e"/>
+  <text x="160" y="150" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="600" fill="#eef0ee">${name}</text>
+</svg>`;
+  writeFileSync(join(outDir, `${id}.svg`), svg, "utf8");
+}
+
+console.log(`Generated ${moves.length} posters in ${outDir}`);
