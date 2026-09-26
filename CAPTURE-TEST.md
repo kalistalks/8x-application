@@ -67,7 +67,8 @@ gitignored (there is no root `.gitignore`; the only `.gitignore` is scoped to th
 
 - Session-1 log: [`.agent-logs/2026-09-26_12-36-28_20ca6343.md`](.agent-logs/2026-09-26_12-36-28_20ca6343.md)
   — canary landed as exchange num=2 (see raw block below).
-- Session-2 log: _added below once the second-session canary runs_
+- Session-2 log: [`.agent-logs/2026-09-26_12-57-36_13d203d0.md`](.agent-logs/2026-09-26_12-57-36_13d203d0.md)
+  — canary landed as exchange num=1 (see raw block below).
 
 ## 4. Canary entries (raw)
 
@@ -97,10 +98,26 @@ Canary received. Let me check whether the hook fired automatically ...
 
 ### Session 2 canary
 
-_Raw entry pasted here from the session-2 log:_
+Status: **PASS.** Started as a genuinely separate chat session (session id `13d203d0`,
+distinct from session-1's `20ca6343`). The hook fired automatically on the canary
+prompt with no manual step, creating a *second* file in `.agent-logs/`. This proves the
+hook is installed globally — it works in a session it did not create, not just the one
+that authored it. Raw block, verbatim from
+[`.agent-logs/2026-09-26_12-57-36_13d203d0.md`](.agent-logs/2026-09-26_12-57-36_13d203d0.md):
 
 ```
-(paste the [LOG_ENTRY type=PROMPT] and [LOG_ENTRY type=RESPONSE] canary block here)
+[LOG_ENTRY type=PROMPT num=1 session=13d203d0]
+timestamp: 2026-09-26T12:57:36.302Z
+model: qdev::auto
+
+CAPTURE TEST — 8x assignment, kalistalks
+
+[LOG_ENTRY type=RESPONSE num=1 session=13d203d0]
+timestamp: 2026-09-26T12:58:08.934Z
+model: qdev::auto
+
+Got it — this looks like a capture/logging test for your 8x assignment. Let me take a look at the active file to see what it's asking for.
+(full response continues in the log file — captured automatically, not truncated there)
 ```
 
 ### How to run the two-session live canary
