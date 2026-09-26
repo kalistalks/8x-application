@@ -58,66 +58,69 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
                 transition={{ duration: 0.22, ease: "easeOut" }}
                 className="flex-1"
               >
-                <div className="relative flex h-full flex-col gap-3 rounded-md border border-line bg-surface-2 p-3">
+                <div className="relative flex h-full gap-3 rounded-md border border-line bg-surface-2 p-3">
                   {/* Remove — top-right (spec). */}
                   <button
                     type="button"
                     onClick={() => onRemoveItem(item.uid)}
                     aria-label={`Remove ${move.name} from position ${pos(index + 1)}`}
                     title="Remove"
-                    className="absolute right-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-sm text-ink-faint transition-colors hover:bg-surface-3 hover:text-ink"
+                    className="absolute right-1.5 top-1.5 z-10 grid h-6 w-6 place-items-center rounded-sm text-ink-faint transition-colors hover:bg-surface-3 hover:text-ink"
                   >
                     <X size={14} weight="bold" aria-hidden />
                   </button>
 
-                  {/* Position + glyph + name. */}
-                  <div className="flex items-center gap-2.5 pr-6">
-                    <span className="font-mono text-xs text-accent">{pos(index + 1)}</span>
-                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-sm border border-line bg-canvas/60 text-ink-muted">
-                      <MoveGlyph moveId={move.id} className="h-6 w-6" />
-                    </span>
-                    <span className="text-sm font-medium text-ink">{move.name}</span>
+                  {/* Left column: position + name, speed, centered reorder arrows. */}
+                  <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+                    <div className="flex items-center gap-2 pr-6">
+                      <span className="font-mono text-xs text-accent">{pos(index + 1)}</span>
+                      <span className="truncate text-sm font-medium text-ink">{move.name}</span>
+                    </div>
+
+                    <SpeedToggle
+                      value={item.speed}
+                      onChange={(speed) => onSetItemSpeed(item.uid, speed)}
+                      moveName={move.name}
+                    />
+
+                    {/* Reorder controls, centered. */}
+                    <div className="mt-auto flex items-center justify-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => onMoveItem(item.uid, -1)}
+                        disabled={index === 0}
+                        aria-label={`Move ${move.name} earlier`}
+                        title="Move earlier"
+                        className={cn(
+                          "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
+                          index === 0
+                            ? "cursor-not-allowed text-ink-faint/40"
+                            : "text-ink-muted hover:border-line-strong hover:text-ink",
+                        )}
+                      >
+                        <ArrowLeft size={14} weight="bold" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onMoveItem(item.uid, 1)}
+                        disabled={index === sequence.length - 1}
+                        aria-label={`Move ${move.name} later`}
+                        title="Move later"
+                        className={cn(
+                          "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
+                          index === sequence.length - 1
+                            ? "cursor-not-allowed text-ink-faint/40"
+                            : "text-ink-muted hover:border-line-strong hover:text-ink",
+                        )}
+                      >
+                        <ArrowRight size={14} weight="bold" aria-hidden />
+                      </button>
+                    </div>
                   </div>
 
-                  {/* Speed toggle. */}
-                  <SpeedToggle
-                    value={item.speed}
-                    onChange={(speed) => onSetItemSpeed(item.uid, speed)}
-                    moveName={move.name}
-                  />
-
-                  {/* Reorder controls. */}
-                  <div className="mt-auto flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => onMoveItem(item.uid, -1)}
-                      disabled={index === 0}
-                      aria-label={`Move ${move.name} earlier`}
-                      title="Move earlier"
-                      className={cn(
-                        "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
-                        index === 0
-                          ? "cursor-not-allowed text-ink-faint/40"
-                          : "text-ink-muted hover:border-line-strong hover:text-ink",
-                      )}
-                    >
-                      <ArrowLeft size={14} weight="bold" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onMoveItem(item.uid, 1)}
-                      disabled={index === sequence.length - 1}
-                      aria-label={`Move ${move.name} later`}
-                      title="Move later"
-                      className={cn(
-                        "grid h-7 w-7 place-items-center rounded-sm border border-line transition-colors",
-                        index === sequence.length - 1
-                          ? "cursor-not-allowed text-ink-faint/40"
-                          : "text-ink-muted hover:border-line-strong hover:text-ink",
-                      )}
-                    >
-                      <ArrowRight size={14} weight="bold" aria-hidden />
-                    </button>
+                  {/* Right: large motion glyph so the camera move reads at a glance. */}
+                  <div className="grid w-20 shrink-0 place-items-center rounded-sm border border-line bg-canvas/50 text-ink-muted">
+                    <MoveGlyph moveId={move.id} className="h-14 w-14" />
                   </div>
                 </div>
               </motion.li>

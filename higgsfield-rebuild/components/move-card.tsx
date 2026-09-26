@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Plus, Check } from "@phosphor-icons/react";
 import type { CameraMove } from "@/lib/types";
-import { MoveGlyph } from "@/components/move-glyph";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -15,31 +14,13 @@ type Props = {
 };
 
 /**
- * A single move-library card (spec: Compose section 4). Shows a looping preview
- * clip on hover/focus over a static poster, a line glyph, the name, and a short
- * description. Clicking appends the move to the sequence. Shares the graphite
- * card language with the sequence chips so "click card -> chip appears" reads
- * without explanation.
+ * A single move-library card (spec: Compose section 4). The looping preview clip
+ * is the primary visual — it plays by default (muted, looped) with the poster as
+ * the load fallback. Clicking appends the move to the sequence. Shares the
+ * graphite card language with the sequence chips.
  */
 export function MoveCard({ move, onAdd, disabled = false }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [added, setAdded] = useState(false);
-
-  const play = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    void v.play().catch(() => {
-      /* autoplay/hover play can reject; poster stays, which is fine */
-    });
-  };
-
-  const stop = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.pause();
-    v.currentTime = 0;
-  };
 
   const handleClick = () => {
     if (disabled) return;
@@ -53,10 +34,6 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
     <button
       type="button"
       onClick={handleClick}
-      onMouseEnter={play}
-      onMouseLeave={stop}
-      onFocus={play}
-      onBlur={stop}
       disabled={disabled}
       aria-label={`Add ${move.name} to sequence — ${move.description}`}
       className={cn(
@@ -66,24 +43,20 @@ export function MoveCard({ move, onAdd, disabled = false }: Props) {
           : "hover:border-line-strong hover:bg-surface-3",
       )}
     >
-      {/* Preview: poster by default, clip loops on hover/focus. */}
+      {/* Preview clip is the main visual: loops by default. */}
       <div className="relative aspect-video w-full overflow-hidden bg-surface">
         <video
-          ref={videoRef}
           src={move.clip}
           poster={move.poster}
+          autoPlay
           muted
           loop
           playsInline
-          preload="none"
+          preload="metadata"
           aria-hidden
           tabIndex={-1}
           className="h-full w-full object-cover"
         />
-        {/* Line glyph badge, top-left. */}
-        <span className="absolute left-2 top-2 grid h-7 w-7 place-items-center rounded-sm border border-line bg-canvas/70 text-ink-muted backdrop-blur">
-          <MoveGlyph moveId={move.id} className="h-5 w-5" />
-        </span>
         {/* Add affordance, top-right: + normally, check briefly after adding. */}
         <span
           className={cn(

@@ -18,7 +18,11 @@ export function Section({
       <div className="flex items-baseline gap-2">
         <span className="font-mono text-xs text-ink-faint">{index}</span>
         <h2 className="text-sm font-semibold tracking-tight text-ink">{title}</h2>
-        {hint && <span className="text-xs text-ink-faint">{hint}</span>}
+        {hint && (
+          <span className="ml-auto font-mono text-xs text-ink-faint tabular-nums">
+            {hint}
+          </span>
+        )}
       </div>
       {children}
     </section>
