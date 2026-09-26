@@ -42,6 +42,12 @@ export function Compose({
 }: Props) {
   return (
     <div className="space-y-10">
+      <section className="page-intro">
+            <div className="eyebrow">CAMERA CHOREOGRAPHY</div>
+            <h1>Camera sequence</h1>
+            <p>Build up to three moves in the order they should happen.</p>
+      </section>
+
       <Section index="1" title="Scene">
         <SceneComposer
           prompt={prompt}

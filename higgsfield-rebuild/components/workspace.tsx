@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MAX_MOVES, type MoveSpeed, type SequenceItem, type WorkspaceState } from "@/lib/types";
 import { Compose } from "@/components/compose";
 import { Generating } from "@/components/generating";
+import { Result } from "@/components/result";
 
 /** Per-instance id for a sequence item (stable across reorders). */
 function newUid(): string {
@@ -101,23 +102,7 @@ export function Workspace() {
             />
           )}
           {state === "result" && (
-            // Result screen lands in Step 8. Temporary panel with a working
-            // Start over so the flow is complete-able during review.
-            <div className="grid min-h-[320px] place-items-center rounded-lg border border-dashed border-line bg-surface/40 p-10 text-center">
-              <div>
-                <p className="text-lg font-semibold text-ink">Your shot is ready.</p>
-                <p className="mt-1 max-w-sm text-sm text-ink-muted">
-                  Result screen (video, summary, download, disclosure) lands in Step 8.
-                </p>
-                <button
-                  type="button"
-                  onClick={startOver}
-                  className="mt-4 rounded-md border border-line px-4 py-2 text-sm text-ink-muted hover:border-line-strong hover:text-ink"
-                >
-                  Start over
-                </button>
-              </div>
-            </div>
+            <Result prompt={prompt} sequence={sequence} onStartOver={startOver} />
           )}
         </motion.div>
       </AnimatePresence>
