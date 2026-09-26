@@ -10,6 +10,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh flex-col bg-canvas">
       <Header />
       <main className="flex flex-1 flex-col">
+        <section className="page-intro">
+            <div className="eyebrow">CAMERA CHOREOGRAPHY</div>
+            <h1>Camera sequence</h1>
+            <p>Build up to three moves in the order they should happen.</p>
+        </section>
+
         <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 sm:py-10">
           {children}
         </div>
