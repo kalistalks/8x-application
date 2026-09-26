@@ -79,7 +79,7 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
     <div className="overflow-hidden rounded-lg border border-line bg-surface/40">
       <div className="grid gap-0 md:grid-cols-2">
         {/* Left: preview frame with scan line. */}
-        <div className="relative aspect-video w-full overflow-hidden border-b border-line bg-surface md:border-b-0 md:border-r">
+        <div className="relative w-full overflow-hidden border-b border-line bg-surface md:border-b-0 md:border-r">
           {imageDataUrl ? (
             <Image src={imageDataUrl} alt="" fill unoptimized className="object-contain opacity-90" />
           ) : (
@@ -90,7 +90,7 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
               alt=""
               fill
               aria-hidden
-              className="object-contain opacity-80"
+              className="object-fit opacity-80"
             />
           )}
 
@@ -107,13 +107,6 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
               className="scan-line absolute inset-x-0 h-px bg-accent shadow-[0_0_12px_2px_rgba(198,242,78,0.55)]"
             />
           )}
-
-          <span className="absolute left-4 top-4 translate-x-3 rounded-sm bg-canvas/70 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-ink-muted backdrop-blur">
-            Preview build
-          </span>
-          <span className="absolute right-4 top-4 -translate-x-3 rounded-sm bg-canvas/70 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-accent backdrop-blur">
-            {sequence.length} moves locked
-          </span>
         </div>
 
         {/* Right: status + progress. */}

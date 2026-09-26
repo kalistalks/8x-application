@@ -28,7 +28,7 @@ export function GenerateBar({ prompt, sequence, onGenerate }: Props) {
     : "Add at least one move to generate.";
 
   return (
-    <div className="flex flex-col gap-3 border border-line bg-surface/50 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 border-line bg-surface/50 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
         <p className="text-xs uppercase tracking-wide text-ink-faint">
           {sequence.length} {sequence.length === 1 ? "move" : "moves"} queued

@@ -65,8 +65,10 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
 
       {/* Two columns: video + sidebar. */}
       <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_320px]">
-        {/* Video. */}
-        <div className="overflow-hidden rounded-lg border border-line bg-black">
+        {/* Video. self-start so the frame only takes the video's own height
+            (the grid would otherwise stretch it to the taller sidebar, leaving
+            black space). h-auto w-full lets the clip fill the width edge-to-edge. */}
+        <div className="relative self-start overflow-hidden rounded-lg border border-line bg-black">
           <video
             ref={videoRef}
             src={RESULT_CLIP}
@@ -76,7 +78,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
             loop={loop}
             playsInline
             controls
-            className="aspect-video w-full object-contain"
+            className="block h-auto w-full"
           />
         </div>
 
