@@ -7,6 +7,7 @@ import { ImageUpload } from "@/components/image-upload";
 import { SubjectPrompt } from "@/components/subject-prompt";
 import { Sequence } from "@/components/sequence";
 import { MoveLibrary } from "@/components/move-library";
+import { GenerateBar } from "@/components/generate-bar";
 
 type Props = {
   prompt: string;
@@ -38,6 +39,7 @@ export function Compose({
   onRemoveItem,
   onMoveItem,
   onSetItemSpeed,
+  onGenerate,
 }: Props) {
   return (
     <div className="space-y-10">
@@ -61,9 +63,13 @@ export function Compose({
       <Section
         index="4"
         title="Move library"
-        hint={full ? "sequence full — remove a move to add more" : undefined}
+        hint={full ? "sequence full" : undefined}
       >
         <MoveLibrary onAddMove={onAddMove} full={full} />
+      </Section>
+
+      <Section index="5" title="Generate">
+        <GenerateBar sequence={sequence} onGenerate={onGenerate} />
       </Section>
     </div>
   );
