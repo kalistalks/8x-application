@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { SequenceItem, WorkspaceState } from "@/lib/types";
+import { Compose } from "@/components/compose";
 
 /**
  * The workspace state machine (spec: Product Principle). Holds all shared state
@@ -35,7 +36,15 @@ export function Workspace() {
           transition={{ duration: 0.22, ease: "easeOut" }}
         >
           {state === "compose" && (
-            <StatePlaceholder title="Compose" note="Image upload, subject prompt, sequence, and move library land here." />
+            <Compose
+              prompt={prompt}
+              onPromptChange={setPrompt}
+              imageDataUrl={imageDataUrl}
+              onImageChange={setImageDataUrl}
+              sequence={sequence}
+              onSequenceChange={setSequence}
+              onGenerate={() => setState("generating")}
+            />
           )}
           {state === "generating" && (
             <StatePlaceholder title="Generating" note="Staged status text + progress bar land here." />

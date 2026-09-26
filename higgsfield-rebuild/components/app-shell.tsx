@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 /**
  * The Higgsfield product shell (spec: Header). Compact brand + context only.
@@ -22,7 +22,14 @@ function Header() {
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-canvas/85 backdrop-blur">
       <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-3 px-4 sm:px-6">
-        <BrandMark />
+        <Image
+          src="/higgsfield_logo.png"
+          alt="Higgsfield"
+          width={24}
+          height={24}
+          priority
+          className="h-6 w-6 rounded-[7px]"
+        />
         <span className="text-sm font-semibold tracking-tight text-ink">
           Higgsfield
         </span>
@@ -33,21 +40,5 @@ function Header() {
         </span>
       </div>
     </header>
-  );
-}
-
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "grid h-6 w-6 place-items-center rounded-[7px] bg-accent text-accent-ink",
-        className,
-      )}
-    >
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
-        <path d="M6 5 v14 M18 5 v14 M6 12 h12" />
-      </svg>
-    </span>
   );
 }
