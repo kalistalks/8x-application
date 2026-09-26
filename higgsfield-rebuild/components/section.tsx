@@ -1,8 +1,7 @@
 /**
- * A labelled Compose section rendered as a bento panel: a step index + title +
- * optional right-aligned hint, on a graphite surface with a fine border and
- * generous padding. Matches the containerised look of the Generating/Result
- * screens so every state shares the same card language.
+ * A labelled Compose section: a step index + title + optional right-aligned
+ * hint, then its content. Rendered as a padded block; the parent draws a single
+ * surrounding container and separates sections with divider lines.
  */
 export function Section({
   index,
@@ -16,7 +15,7 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-line bg-surface/50 p-5 sm:p-6">
+    <section className="p-5 sm:p-6">
       {(index || title || hint) && (
         <div className="mb-4 flex items-baseline gap-2">
           {index && <span className="font-mono text-xs text-accent">{index}</span>}

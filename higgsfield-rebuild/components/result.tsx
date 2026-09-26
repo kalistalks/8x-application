@@ -76,7 +76,7 @@ export function Result({ prompt, sequence, onStartOver }: Props) {
             loop={loop}
             playsInline
             controls
-            className="aspect-video w-full object-cover"
+            className="aspect-video w-full object-contain"
           />
         </div>
 

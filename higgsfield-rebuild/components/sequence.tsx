@@ -1,7 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { CaretLeftIcon , CaretRightIcon, X } from "@phosphor-icons/react";
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  CaretUpIcon,
+  CaretDownIcon,
+  X,
+} from "@phosphor-icons/react";
 import { MAX_MOVES, type MoveSpeed, type SequenceItem } from "@/lib/types";
 import { getMove } from "@/lib/moves";
 import { MoveGlyph } from "@/components/move-glyph";
@@ -102,7 +108,10 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
                           : "text-ink-muted hover:border-line-strong hover:text-ink",
                       )}
                     >
-                      <CaretLeftIcon size={14} weight="bold" aria-hidden />
+                      {/* Chips stack vertically on mobile, in a row at sm+ —
+                          so use up/down on mobile, left/right at sm+. */}
+                      <CaretUpIcon size={14} weight="bold" aria-hidden className="sm:hidden" />
+                      <CaretLeftIcon size={14} weight="bold" aria-hidden className="hidden sm:block" />
                     </button>
                     <button
                       type="button"
@@ -117,7 +126,8 @@ export function Sequence({ sequence, onRemoveItem, onMoveItem, onSetItemSpeed }:
                           : "text-ink-muted hover:border-line-strong hover:text-ink",
                       )}
                     >
-                      <CaretRightIcon size={14} weight="bold" aria-hidden />
+                      <CaretDownIcon size={14} weight="bold" aria-hidden className="sm:hidden" />
+                      <CaretRightIcon size={14} weight="bold" aria-hidden className="hidden sm:block" />
                     </button>
                   </div>
                 </div>

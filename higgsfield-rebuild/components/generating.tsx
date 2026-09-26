@@ -81,19 +81,16 @@ export function Generating({ sequence, imageDataUrl, onCancel, onComplete }: Pro
         {/* Left: preview frame with scan line. */}
         <div className="relative aspect-video w-full overflow-hidden border-b border-line bg-surface md:border-b-0 md:border-r">
           {imageDataUrl ? (
-            <Image src={imageDataUrl} alt="" fill unoptimized className="object-cover opacity-90" />
+            <Image src={imageDataUrl} alt="" fill unoptimized className="object-contain opacity-90" />
           ) : (
-            // No reference uploaded: play the mock render (muted) so the frame
-            // shows the build coming together rather than sitting empty.
-            <video
-              src="/mock.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
+            // No reference uploaded: show the static preview poster fitted to
+            // the frame so nothing is cropped while the render "builds".
+            <Image
+              src="/preview-poster.jpg"
+              alt=""
+              fill
               aria-hidden
-              poster="/preview-poster.jpg"
-              className="absolute inset-0 h-full w-full object-cover opacity-80"
+              className="object-contain opacity-80"
             />
           )}
 

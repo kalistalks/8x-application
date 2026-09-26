@@ -55,29 +55,34 @@ export function Compose({
         </p>
       </header>
 
-      <Section index="01" title="Describe your scene" hint="REQUIRED">
-        <SceneComposer
-          prompt={prompt}
-          onPromptChange={onPromptChange}
-          imageDataUrl={imageDataUrl}
-          onImageChange={onImageChange}
-        />
-      </Section>
+      {/* All compose steps live in one bordered block, separated by divider
+          lines — no gaps between sections. */}
+      <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface/50">
+        <Section index="01" title="Describe your scene" hint="REQUIRED">
+          <SceneComposer
+            prompt={prompt}
+            onPromptChange={onPromptChange}
+            imageDataUrl={imageDataUrl}
+            onImageChange={onImageChange}
+          />
+        </Section>
 
-      <Section index="01" title="Your Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
-        <Sequence
-          sequence={sequence}
-          onRemoveItem={onRemoveItem}
-          onMoveItem={onMoveItem}
-          onSetItemSpeed={onSetItemSpeed}
-        />
-      </Section>
+        <Section index="02" title="Your Sequence" hint={`${sequence.length}/${MAX_MOVES}`}>
+          <Sequence
+            sequence={sequence}
+            onRemoveItem={onRemoveItem}
+            onMoveItem={onMoveItem}
+            onSetItemSpeed={onSetItemSpeed}
+          />
+        </Section>
 
-      <Section index="02" title="Move Library" hint={full ? "sequence full" : undefined}>
-        <MoveLibrary onAddMove={onAddMove} full={full} />
-      </Section>
+        <Section index="03" title="Move Library" hint={full ? "sequence full" : undefined}>
+          <MoveLibrary onAddMove={onAddMove} full={full} />
+        </Section>
+      
 
-      <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
+        <GenerateBar prompt={prompt} sequence={sequence} onGenerate={onGenerate} />
+      </div>
     </div>
   );
 }
